@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Multithreading Demos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Header -->
+        <header class="row bg-primary text-white py-4 mb-4">
+            <div class="col-12 text-center">
+                <h1 class="display-4 mb-2" th:text="${title}">Multithreading & Concurrency Demos</h1>
+                <p class="lead" th:text="${description}">Interactive demonstrations of Java multithreading concepts</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="row">
+            <div class="col-12">
+                <div class="row g-4">
+                    <!-- Odd/Even Demo -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="card-title mb-0">🔢 Odd/Even Number Printing</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">Two threads print odd and even numbers alternately using synchronization.</p>
+                                <div class="mb-3">
+                                    <label for="oddEvenMax" class="form-label">Max Number:</label>
+                                    <input type="number" class="form-control" id="oddEvenMax" value="20" min="1" max="100">
+                                </div>
+                                <button class="btn btn-info w-100" onclick="runDemo('odd-even', 'oddEvenMax')">
+                                    Run Odd/Even Threads
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Producer/Consumer Demo -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="card-title mb-0">🔄 Producer/Consumer</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">Producer produces items, Consumer consumes them using wait() & notify().</p>
+                                <div class="mb-3">
+                                    <label for="pcItems" class="form-label">Item Count:</label>
+                                    <input type="number" class="form-control" id="pcItems" value="10" min="1" max="50">
+                                </div>
+                                <button class="btn btn-success w-100" onclick="runDemo('producer-consumer', 'pcItems')">
+                                    Run Producer/Consumer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Deadlock Demo -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-danger text-white">
+                                <h5 class="card-title mb-0">⚠️ Deadlock Demo</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">Demonstrates deadlock scenario and its prevention using ordered locking.</p>
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="deadlockFix">
+                                        <label class="form-check-label" for="deadlockFix">
+                                            Use Deadlock Prevention
+                                        </label>
+                                    </div>
+                                </div>
+                                <button class="btn btn-danger w-100" onclick="runDeadlockDemo()">
+                                    Run Deadlock Demo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Singleton Demo -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-warning text-dark">
+                                <h5 class="card-title mb-0">🏗️ Thread-safe Singleton</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">Multiple threads access singleton instance safely using double-checked locking.</p>
+                                <div class="mb-3">
+                                    <label for="singletonThreads" class="form-label">Thread Count:</label>
+                                    <input type="number" class="form-control" id="singletonThreads" value="5" min="1" max="20">
+                                </div>
+                                <button class="btn btn-warning w-100" onclick="runDemo('singleton', 'singletonThreads')">
+                                    Run Singleton Demo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CountDownLatch Demo -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-secondary text-white">
+                                <h5 class="card-title mb-0">🔢 CountDownLatch</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">Multiple workers wait for all tasks to complete before proceeding.</p>
+                                <div class="mb-3">
+                                    <label for="cdlWorkers" class="form-label">Worker Count:</label>
+                                    <input type="number" class="form-control" id="cdlWorkers" value="4" min="1" max="10">
+                                </div>
+                                <button class="btn btn-secondary w-100" onclick="runDemo('countdown-latch', 'cdlWorkers')">
+                                    Run CountDownLatch Demo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CyclicBarrier Demo -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-dark text-white">
+                                <h5 class="card-title mb-0">🔄 CyclicBarrier</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">Multiple threads synchronize at barrier points in multiple phases.</p>
+                                <div class="mb-3">
+                                    <label for="cbThreads" class="form-label">Thread Count:</label>
+                                    <input type="number" class="form-control" id="cbThreads" value="3" min="1" max="8">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="cbPhases" class="form-label">Phases:</label>
+                                    <input type="number" class="form-control" id="cbPhases" value="2" min="1" max="5">
+                                </div>
+                                <button class="btn btn-dark w-100" onclick="runCyclicBarrierDemo()">
+                                    Run CyclicBarrier Demo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ReadWriteLock Demo -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="card-title mb-0">📖 ReadWriteLock</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">Multiple readers can access data concurrently, writers get exclusive access.</p>
+                                <div class="mb-3">
+                                    <label for="rwlReaders" class="form-label">Reader Count:</label>
+                                    <input type="number" class="form-control" id="rwlReaders" value="3" min="1" max="10">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="rwlWriters" class="form-label">Writer Count:</label>
+                                    <input type="number" class="form-control" id="rwlWriters" value="2" min="1" max="5">
+                                </div>
+                                <button class="btn btn-primary w-100" onclick="runReadWriteLockDemo()">
+                                    Run ReadWriteLock Demo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CompletableFuture Demo -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="card-title mb-0">⚡ CompletableFuture</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">Demonstrates asynchronous programming with CompletableFuture.</p>
+                                <button class="btn btn-info w-100" onclick="runDemo('completable-future')">
+                                    Run CompletableFuture Demo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ThreadPool Demo -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="card-title mb-0">🏊 ThreadPool</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">Demonstrates different thread pool configurations and their behavior.</p>
+                                <div class="mb-3">
+                                    <label for="tpType" class="form-label">Pool Type:</label>
+                                    <select class="form-select" id="tpType">
+                                        <option value="fixed">Fixed Thread Pool</option>
+                                        <option value="cached">Cached Thread Pool</option>
+                                        <option value="single">Single Thread Executor</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="tpTasks" class="form-label">Task Count:</label>
+                                    <input type="number" class="form-control" id="tpTasks" value="6" min="1" max="20">
+                                </div>
+                                <button class="btn btn-success w-100" onclick="runThreadPoolDemo()">
+                                    Run ThreadPool Demo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h5 class="card-title mb-0">📊 Demo Results</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="results" class="demo-results">
+                            <p class="text-muted text-center">Click any demo button above to see results here...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/demo.js"></script>
+</body>
+</html>
