@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" 
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports 
+              http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" 
+              name="orders_report" 
+              pageWidth="595" 
+              pageHeight="842" 
+              columnWidth="555" 
+              leftMargin="20" 
+              rightMargin="20" 
+              topMargin="20" 
+              bottomMargin="20" 
+              uuid="b2c3d4e5-f6a7-8901-bcde-f23456789012">
+    
+    <property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+    
+    <parameter name="fromDate" class="java.time.LocalDateTime" isForPrompting="false"/>
+    <parameter name="toDate" class="java.time.LocalDateTime" isForPrompting="false"/>
+    <parameter name="totalOrders" class="java.lang.Integer" isForPrompting="false"/>
+    <parameter name="totalAmount" class="java.lang.Double" isForPrompting="false"/>
+    
+    <field name="id" class="java.lang.Long"/>
+    <field name="userId" class="java.lang.Long"/>
+    <field name="productId" class="java.lang.Long"/>
+    <field name="quantity" class="java.lang.Integer"/>
+    <field name="unitPrice" class="java.math.BigDecimal"/>
+    <field name="totalAmount" class="java.math.BigDecimal"/>
+    <field name="orderDate" class="java.time.LocalDateTime"/>
+    <field name="user" class="com.example.jasper.entity.User"/>
+    <field name="product" class="com.example.jasper.entity.Product"/>
+    
+    <title>
+        <band height="80">
+            <staticText>
+                <reportElement x="0" y="0" width="555" height="30" uuid="cccccccc-cccc-cccc-cccc-cccccccccccc"/>
+                <textElement textAlignment="Center">
+                    <font size="16" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Orders Report]]></text>
+            </staticText>
+            
+            <textField>
+                <reportElement x="0" y="30" width="555" height="20" uuid="dddddddd-dddd-dddd-dddd-dddddddddddd"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA[
+                    ($P{fromDate} != null && $P{toDate} != null) 
+                    ? "Date Range: " + $P{fromDate}.toLocalDate() + " to " + $P{toDate}.toLocalDate()
+                    : "All Orders"
+                ]]></textFieldExpression>
+            </textField>
+            
+            <textField pattern="yyyy-MM-dd HH:mm:ss">
+                <reportElement x="400" y="50" width="155" height="20" uuid="eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"/>
+                <textElement textAlignment="Right"/>
+                <textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+            </textField>
+        </band>
+    </title>
+    
+    <columnHeader>
+        <band height="30">
+            <staticText>
+                <reportElement x="0" y="0" width="60" height="30" uuid="ffffffff-ffff-ffff-ffff-ffffffffffff" 
+                               backcolor="#E6E6E6" mode="Opaque"/>
+                <box>
+                    <pen lineWidth="1.0"/>
+                    <topPen lineWidth="1.0"/>
+                    <leftPen lineWidth="1.0"/>
+                    <bottomPen lineWidth="1.0"/>
+                    <rightPen lineWidth="1.0"/>
+                </box>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Order ID]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="60" y="0" width="100" height="30" uuid="00000000-0000-0000-0000-000000000001" 
+                               backcolor="#E6E6E6" mode="Opaque"/>
+                <box>
+                    <pen lineWidth="1.0"/>
+                    <topPen lineWidth="1.0"/>
+                    <leftPen lineWidth="1.0"/>
+                    <bottomPen lineWidth="1.0"/>
+                    <rightPen lineWidth="1.0"/>
+                </box>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Customer]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="160" y="0" width="120" height="30" uuid="00000000-0000-0000-0000-000000000002" 
+                               backcolor="#E6E6E6" mode="Opaque"/>
+                <box>
+                    <pen lineWidth="1.0"/>
+                    <topPen lineWidth="1.0"/>
+                    <leftPen lineWidth="1.0"/>
+                    <bottomPen lineWidth="1.0"/>
+                    <rightPen lineWidth="1.0"/>
+                </box>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Product]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="280" y="0" width="60" height="30" uuid="00000000-0000-0000-0000-000000000003" 
+                               backcolor="#E6E6E6" mode="Opaque"/>
+                <box>
+                    <pen lineWidth="1.0"/>
+                    <topPen lineWidth="1.0"/>
+                    <leftPen lineWidth="1.0"/>
+                    <bottomPen lineWidth="1.0"/>
+                    <rightPen lineWidth="1.0"/>
+                </box>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Qty]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="340" y="0" width="80" height="30" uuid="00000000-0000-0000-0000-000000000004" 
+                               backcolor="#E6E6E6" mode="Opaque"/>
+                <box>
+                    <pen lineWidth="1.0"/>
+                    <topPen lineWidth="1.0"/>
+                    <leftPen lineWidth="1.0"/>
+                    <bottomPen lineWidth="1.0"/>
+                    <rightPen lineWidth="1.0"/>
+                </box>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Unit Price]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="420" y="0" width="80" height="30" uuid="00000000-0000-0000-0000-000000000005" 
+                               backcolor="#E6E6E6" mode="Opaque"/>
+                <box>
+                    <pen lineWidth="1.0"/>
+                    <topPen lineWidth="1.0"/>
+                    <leftPen lineWidth="1.0"/>
+                    <bottomPen lineWidth="1.0"/>
+                    <rightPen lineWidth="1.0"/>
+                </box>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Total]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="500" y="0" width="55" height="30" uuid="00000000-0000-0000-0000-000000000006" 
+                               backcolor="#E6E6E6" mode="Opaque"/>
+                <box>
+                    <pen lineWidth="1.0"/>
+                    <topPen lineWidth="1.0"/>
+                    <leftPen lineWidth="1.0"/>
+                    <bottomPen lineWidth="1.0"/>
+                    <rightPen lineWidth="1.0"/>
+                </box>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Date]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+    
+    <detail>
+        <band height="25">
+            <textField>
+                <reportElement x="0" y="0" width="60" height="25" uuid="00000000-0000-0000-0000-000000000007"/>
+                <box>
+                    <pen lineWidth="1.0"/>
+                    <topPen lineWidth="1.0"/>
+                    <leftPen lineWidth="1.0"/>
+                    <bottomPen lineWidth="1.0"/>
+                    <rightPen lineWidth="1.0"/>
+                </box>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="60" y="0" width="100" height="25" uuid="00000000-0000-0000-0000-000000000008"/>
+                <box>
+                    <pen lineWidth="1.0"/>
+                    <topPen lineWidth="1.0"/>
+                    <leftPen lineWidth="1.0"/>
+                    <bottomPen lineWidth="1.0"/>
+                    <rightPen lineWidth="1.0"/>
+                </box>
+                <textElement textAlignment="Left" verticalAlignment="Middle">
+                    <paragraph leftIndent="5"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{user} != null ? $F{user}.getName() : "N/A"]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="160" y="0" width="120" height="25" uuid="00000000-0000-0000-0000-000000000009"/>
+                <box>
+                    <pen lineWidth="1.0"/>
+                    <topPen lineWidth="1.0"/>
+                    <leftPen lineWidth="1.0"/>
+                    <bottomPen lineWidth="1.0"/>
+                    <rightPen lineWidth="1.0"/>
+                </box>
+                <textElement textAlignment="Left" verticalAlignment="Middle">
+                    <paragraph leftIndent="5"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{product} != null ? $F{product}.getName() : "N/A"]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="280" y="0" width="60" height="25" uuid="00000000-0000-0000-0000-00000000000a"/>
+                <box>
+                    <pen lineWidth="1.0"/>
+                    <topPen lineWidth="1.0"/>
+                    <leftPen lineWidth="1.0"/>
+                    <bottomPen lineWidth="1.0"/>
+                    <rightPen lineWidth="1.0"/>
+                </box>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
+            </textField>
+            <textField pattern="$#,##0.00">
+                <reportElement x="340" y="0" width="80" height="25" uuid="00000000-0000-0000-0000-00000000000b"/>
+                <box>
+                    <pen lineWidth="1.0"/>
+                    <topPen lineWidth="1.0"/>
+                    <leftPen lineWidth="1.0"/>
+                    <bottomPen lineWidth="1.0"/>
+                    <rightPen lineWidth="1.0"/>
+                </box>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <paragraph rightIndent="5"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{unitPrice}]]></textFieldExpression>
+            </textField>
+            <textField pattern="$#,##0.00">
+                <reportElement x="420" y="0" width="80" height="25" uuid="00000000-0000-0000-0000-00000000000c"/>
+                <box>
+                    <pen lineWidth="1.0"/>
+                    <topPen lineWidth="1.0"/>
+                    <leftPen lineWidth="1.0"/>
+                    <bottomPen lineWidth="1.0"/>
+                    <rightPen lineWidth="1.0"/>
+                </box>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <paragraph rightIndent="5"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{totalAmount}]]></textFieldExpression>
+            </textField>
+            <textField pattern="MM/dd/yyyy">
+                <reportElement x="500" y="0" width="55" height="25" uuid="00000000-0000-0000-0000-00000000000d"/>
+                <box>
+                    <pen lineWidth="1.0"/>
+                    <topPen lineWidth="1.0"/>
+                    <leftPen lineWidth="1.0"/>
+                    <bottomPen lineWidth="1.0"/>
+                    <rightPen lineWidth="1.0"/>
+                </box>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{orderDate}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+    
+    <summary>
+        <band height="60">
+            <staticText>
+                <reportElement x="0" y="0" width="200" height="20" uuid="00000000-0000-0000-0000-00000000000e"/>
+                <textElement textAlignment="Left"/>
+                <text><![CDATA[Total Orders:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="200" y="0" width="100" height="20" uuid="00000000-0000-0000-0000-00000000000f"/>
+                <textElement textAlignment="Left"/>
+                <textFieldExpression><![CDATA[$P{totalOrders}]]></textFieldExpression>
+            </textField>
+            
+            <staticText>
+                <reportElement x="0" y="20" width="200" height="20" uuid="00000000-0000-0000-0000-000000000010"/>
+                <textElement textAlignment="Left"/>
+                <text><![CDATA[Total Amount:]]></text>
+            </staticText>
+            <textField pattern="$#,##0.00">
+                <reportElement x="200" y="20" width="100" height="20" uuid="00000000-0000-0000-0000-000000000011"/>
+                <textElement textAlignment="Left"/>
+                <textFieldExpression><![CDATA[$P{totalAmount}]]></textFieldExpression>
+            </textField>
+            
+            <textField>
+                <reportElement x="0" y="40" width="555" height="20" uuid="00000000-0000-0000-0000-000000000012"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["Report generated on " + new java.util.Date()]]></textFieldExpression>
+            </textField>
+        </band>
+    </summary>
+</jasperReport>
+

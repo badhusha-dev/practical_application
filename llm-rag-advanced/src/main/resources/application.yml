@@ -1,0 +1,118 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: llm-rag-advanced
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/llm_rag
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        jdbc:
+          batch_size: 100
+        order_inserts: true
+        order_updates: true
+  
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+  
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600000 # 1 hour
+  
+  redis:
+    host: localhost
+    port: 6379
+    timeout: 2000ms
+    lettuce:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+  
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+  
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+# Application-specific configuration
+app:
+  provider: ${LLM_PROVIDER:openai}  # openai or ollama
+  
+  openai:
+    apiKey: ${OPENAI_API_KEY:}
+    model: ${OPENAI_MODEL:gpt-4o-mini}
+    baseUrl: https://api.openai.com/v1
+    embeddingModel: text-embedding-3-small
+    temperature: 0.7
+    maxTokens: 2000
+  
+  ollama:
+    baseUrl: ${OLLAMA_BASE_URL:http://localhost:11434}
+    model: ${OLLAMA_MODEL:llama3.1}
+    embeddingModel: nomic-embed-text
+    temperature: 0.7
+    maxTokens: 2000
+  
+  rag:
+    topK: 6
+    maxContextChars: 10000
+    chunkSize: 3000
+    chunkOverlap: 200
+    systemPrompt: |
+      You are a helpful assistant with access to a knowledge base. 
+      When answering questions, cite relevant sources using the format: [Source: document_name#chunk_index]
+      If you don't know something, say so rather than making up information.
+      Refuse to help with harmful, illegal, or unethical requests.
+      Keep responses concise and accurate.
+  
+  security:
+    jwt:
+      secret: ${JWT_SECRET:mySecretKey12345678901234567890123456789012345678901234567890}
+      expiration: 86400000 # 24 hours in milliseconds
+  
+  rateLimit:
+    requestsPerMinute: 60
+    windowSizeMinutes: 1
+  
+  tools:
+    enabled: true
+    maxToolCalls: 3
+    toolTimeoutSeconds: 30
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.example.llm: DEBUG
+    org.springframework.security: INFO
+    org.springframework.web: INFO
+    org.springframework.data.redis: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

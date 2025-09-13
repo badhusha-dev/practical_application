@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - Redis Advanced Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .cache-info {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 0.375rem;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        .product-card {
+            transition: transform 0.2s;
+        }
+        .product-card:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">Redis Advanced Demo</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/products">Products</a>
+                <a class="nav-link" href="/auth/login">Login</a>
+                <a class="nav-link" href="/notifications">Notifications</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="mb-4">Products</h1>
+                
+                <div class="cache-info" th:if="${cacheInfo}">
+                    <strong>Cache Status:</strong> <span th:text="${cacheInfo}"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">API Endpoints</h5>
+                                <p class="card-text">Test the Redis caching functionality:</p>
+                                <ul class="list-unstyled">
+                                    <li><code>GET /products</code> - All products (cached)</li>
+                                    <li><code>GET /products/{id}</code> - Product by ID (cached)</li>
+                                    <li><code>POST /products</code> - Create product (invalidates cache)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Rate Limiting</h5>
+                                <p class="card-text">Test Redis-based rate limiting:</p>
+                                <ul class="list-unstyled">
+                                    <li><code>GET /api/data</code> - Protected endpoint</li>
+                                    <li><code>GET /api/rate-limit-status</code> - Check status</li>
+                                    <li>Max 5 requests per minute</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Redis Pub/Sub</h5>
+                                <p class="card-text">Test real-time messaging:</p>
+                                <ul class="list-unstyled">
+                                    <li><code>POST /notifications/publish</code> - Send message</li>
+                                    <li><code>GET /notifications/messages</code> - Get messages</li>
+                                    <li>Real-time notifications</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" th:if="${products != null and !products.empty}">
+                    <div class="col-12">
+                        <h3 class="mb-3">Product List</h3>
+                        <div class="row">
+                            <div class="col-md-6 col-lg-4 mb-3" th:each="product : ${products}">
+                                <div class="card product-card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title" th:text="${product.name}">Product Name</h5>
+                                        <p class="card-text">
+                                            <strong>Price:</strong> $<span th:text="${#numbers.formatDecimal(product.price, 1, 2)}">0.00</span>
+                                        </p>
+                                        <p class="card-text">
+                                            <small class="text-muted">
+                                                Created: <span th:text="${#temporals.format(product.createdAt, 'yyyy-MM-dd HH:mm')}">Date</span>
+                                            </small>
+                                        </p>
+                                    </div>
+                                    <div class="card-footer">
+                                        <button class="btn btn-primary btn-sm" 
+                                                th:onclick="'fetchProduct(' + ${product.id} + ')'">
+                                            View Details
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" th:if="${products == null or products.empty}">
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <h4>No products found</h4>
+                            <p>Make sure the database is properly set up and contains sample data.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function fetchProduct(id) {
+            fetch('/products/' + id)
+                .then(response => response.json())
+                .then(data => {
+                    alert('Product Details:\n' + 
+                          'ID: ' + data.id + '\n' +
+                          'Name: ' + data.name + '\n' +
+                          'Price: $' + data.price + '\n' +
+                          'Created: ' + new Date(data.createdAt).toLocaleString());
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error fetching product details');
+                });
+        }
+
+        // Test rate limiting
+        function testRateLimit() {
+            fetch('/api/data')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Rate limit check passed!\nRemaining requests: ' + data.remainingRequests);
+                    } else {
+                        alert('Rate limit exceeded: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error testing rate limit');
+                });
+        }
+
+        // Test notifications
+        function testNotification() {
+            const message = prompt('Enter notification message:');
+            if (message) {
+                fetch('/notifications/publish', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'message=' + encodeURIComponent(message)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error publishing notification');
+                });
+            }
+        }
+    </script>
+</body>
+</html>

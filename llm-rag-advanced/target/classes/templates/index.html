@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM RAG Advanced Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .chat-container {
+            height: 500px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+        }
+        .message {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+        }
+        .user-message {
+            background-color: #007bff;
+            color: white;
+            margin-left: 20%;
+        }
+        .assistant-message {
+            background-color: white;
+            border: 1px solid #dee2e6;
+            margin-right: 20%;
+        }
+        .tool-message {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            margin-right: 20%;
+        }
+        .upload-area {
+            border: 2px dashed #dee2e6;
+            border-radius: 0.375rem;
+            padding: 2rem;
+            text-align: center;
+            background-color: #f8f9fa;
+        }
+        .upload-area.dragover {
+            border-color: #007bff;
+            background-color: #e7f3ff;
+        }
+        .search-results {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .search-result {
+            padding: 0.5rem;
+            border-bottom: 1px solid #dee2e6;
+            cursor: pointer;
+        }
+        .search-result:hover {
+            background-color: #f8f9fa;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        .status-connected {
+            background-color: #28a745;
+        }
+        .status-disconnected {
+            background-color: #dc3545;
+        }
+        .status-connecting {
+            background-color: #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">LLM RAG Advanced</a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text" id="userInfo" style="display: none;">
+                    <span class="status-indicator status-disconnected" id="statusIndicator"></span>
+                    <span id="username">User</span>
+                </span>
+                <button class="btn btn-outline-light btn-sm ms-2" id="logoutBtn" style="display: none;">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Login Form -->
+        <div id="loginForm" class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Login / Register</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="authForm">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="username" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password" required>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary" id="loginBtn">Login</button>
+                                <button type="button" class="btn btn-outline-secondary" id="registerBtn">Register</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Application -->
+        <div id="mainApp" style="display: none;">
+            <div class="row">
+                <!-- Document Upload -->
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5>Document Upload</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="upload-area" id="uploadArea">
+                                <p>Drag & drop files here or click to select</p>
+                                <input type="file" id="fileInput" multiple accept=".pdf,.doc,.docx,.txt" style="display: none;">
+                            </div>
+                            <div class="mt-3">
+                                <label for="tags" class="form-label">Tags (optional)</label>
+                                <input type="text" class="form-control" id="tags" placeholder="tag1,tag2,tag3">
+                            </div>
+                            <div class="mt-3">
+                                <button class="btn btn-primary" id="uploadBtn" disabled>Upload</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Search -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5>Search Documents</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <input type="text" class="form-control" id="searchQuery" placeholder="Enter search query...">
+                            </div>
+                            <button class="btn btn-outline-primary" id="searchBtn">Search</button>
+                            <div class="search-results mt-3" id="searchResults" style="display: none;">
+                                <h6>Search Results:</h6>
+                                <div id="searchResultsList"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Interface -->
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5>Chat</h5>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="useRag" checked>
+                                <label class="form-check-label" for="useRag">
+                                    Use RAG
+                                </label>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="chat-container" id="chatContainer">
+                                <div class="message assistant-message">
+                                    <strong>Assistant:</strong> Hello! I'm your AI assistant. You can ask me questions, and I'll use the uploaded documents to provide accurate answers. Try asking about the content in your documents!
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="messageInput" placeholder="Type your message...">
+                                    <button class="btn btn-primary" id="sendBtn">Send</button>
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <small class="text-muted">
+                                    <strong>Tools:</strong>
+                                    <label class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" value="math.eval" checked>
+                                        <span class="form-check-label">Math</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" value="weather.lookup" checked>
+                                        <span class="form-check-label">Weather</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" value="url.summary" checked>
+                                        <span class="form-check-label">URL Summary</span>
+                                    </label>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let authToken = localStorage.getItem('authToken');
+        let currentSessionId = null;
+
+        // Initialize
+        if (authToken) {
+            showMainApp();
+            validateToken();
+        }
+
+        // Auth form handling
+        document.getElementById('authForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            login(username, password);
+        });
+
+        document.getElementById('registerBtn').addEventListener('click', function() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            register(username, password);
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            localStorage.removeItem('authToken');
+            authToken = null;
+            showLoginForm();
+        });
+
+        // File upload handling
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const uploadBtn = document.getElementById('uploadBtn');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', handleDragOver);
+        uploadArea.addEventListener('dragleave', handleDragLeave);
+        uploadArea.addEventListener('drop', handleDrop);
+        fileInput.addEventListener('change', handleFileSelect);
+        uploadBtn.addEventListener('click', uploadFile);
+
+        // Search handling
+        document.getElementById('searchBtn').addEventListener('click', searchDocuments);
+        document.getElementById('searchQuery').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchDocuments();
+            }
+        });
+
+        // Chat handling
+        document.getElementById('sendBtn').addEventListener('click', sendMessage);
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        function login(username, password) {
+            fetch('/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.token) {
+                    authToken = data.token;
+                    localStorage.setItem('authToken', authToken);
+                    document.getElementById('username').textContent = data.user.username;
+                    showMainApp();
+                } else {
+                    alert('Login failed');
+                }
+            })
+            .catch(error => {
+                console.error('Login error:', error);
+                alert('Login failed');
+            });
+        }
+
+        function register(username, password) {
+            fetch('/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.token) {
+                    authToken = data.token;
+                    localStorage.setItem('authToken', authToken);
+                    document.getElementById('username').textContent = data.user.username;
+                    showMainApp();
+                } else {
+                    alert('Registration failed');
+                }
+            })
+            .catch(error => {
+                console.error('Registration error:', error);
+                alert('Registration failed');
+            });
+        }
+
+        function validateToken() {
+            fetch('/auth/me', {
+                headers: {
+                    'Authorization': 'Bearer ' + authToken
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Invalid token');
+                }
+            })
+            .then(data => {
+                document.getElementById('username').textContent = data.username;
+                document.getElementById('statusIndicator').className = 'status-indicator status-connected';
+            })
+            .catch(error => {
+                console.error('Token validation error:', error);
+                localStorage.removeItem('authToken');
+                authToken = null;
+                showLoginForm();
+            });
+        }
+
+        function showMainApp() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            document.getElementById('userInfo').style.display = 'block';
+            document.getElementById('logoutBtn').style.display = 'block';
+        }
+
+        function showLoginForm() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('mainApp').style.display = 'none';
+            document.getElementById('userInfo').style.display = 'none';
+            document.getElementById('logoutBtn').style.display = 'none';
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            handleFiles(files);
+        }
+
+        function handleFileSelect(e) {
+            const files = e.target.files;
+            handleFiles(files);
+        }
+
+        function handleFiles(files) {
+            if (files.length > 0) {
+                uploadBtn.disabled = false;
+                uploadArea.innerHTML = `<p>Selected: ${files[0].name}</p>`;
+            }
+        }
+
+        function uploadFile() {
+            const fileInput = document.getElementById('fileInput');
+            const tags = document.getElementById('tags').value;
+            
+            if (fileInput.files.length === 0) {
+                alert('Please select a file');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            if (tags) {
+                formData.append('tags', JSON.stringify(tags.split(',').map(tag => tag.trim())));
+            }
+
+            fetch('/api/documents', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + authToken
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Document uploaded successfully!');
+                fileInput.value = '';
+                uploadBtn.disabled = true;
+                uploadArea.innerHTML = '<p>Drag & drop files here or click to select</p>';
+                document.getElementById('tags').value = '';
+            })
+            .catch(error => {
+                console.error('Upload error:', error);
+                alert('Upload failed');
+            });
+        }
+
+        function searchDocuments() {
+            const query = document.getElementById('searchQuery').value;
+            if (!query.trim()) {
+                alert('Please enter a search query');
+                return;
+            }
+
+            fetch(`/api/search?q=${encodeURIComponent(query)}`, {
+                headers: {
+                    'Authorization': 'Bearer ' + authToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                displaySearchResults(data);
+            })
+            .catch(error => {
+                console.error('Search error:', error);
+                alert('Search failed');
+            });
+        }
+
+        function displaySearchResults(data) {
+            const resultsDiv = document.getElementById('searchResults');
+            const resultsList = document.getElementById('searchResultsList');
+            
+            resultsDiv.style.display = 'block';
+            resultsList.innerHTML = '';
+
+            if (data.chunks && data.chunks.length > 0) {
+                data.chunks.forEach(chunk => {
+                    const resultDiv = document.createElement('div');
+                    resultDiv.className = 'search-result';
+                    resultDiv.innerHTML = `
+                        <strong>Score: ${chunk.score.toFixed(3)}</strong><br>
+                        <small>${chunk.text.substring(0, 200)}...</small>
+                    `;
+                    resultsList.appendChild(resultDiv);
+                });
+            } else {
+                resultsList.innerHTML = '<p>No results found</p>';
+            }
+        }
+
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            
+            if (!message) {
+                return;
+            }
+
+            // Add user message to chat
+            addMessageToChat('user', message);
+            messageInput.value = '';
+
+            // Get selected tools
+            const selectedTools = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+                .map(cb => cb.value);
+
+            // Send chat request
+            const request = {
+                message: message,
+                useRag: document.getElementById('useRag').checked,
+                tools: selectedTools
+            };
+
+            fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + authToken
+                },
+                body: JSON.stringify(request)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Chat request failed');
+                }
+                return response.body.getReader();
+            })
+            .then(reader => {
+                const decoder = new TextDecoder();
+                let assistantMessage = '';
+                let messageDiv = null;
+
+                function readStream() {
+                    return reader.read().then(({ done, value }) => {
+                        if (done) {
+                            return;
+                        }
+
+                        const chunk = decoder.decode(value);
+                        const lines = chunk.split('\n');
+                        
+                        for (const line of lines) {
+                            if (line.startsWith('data: ')) {
+                                try {
+                                    const data = JSON.parse(line.substring(6));
+                                    
+                                    if (data.type === 'delta') {
+                                        assistantMessage += data.token;
+                                        
+                                        if (!messageDiv) {
+                                            messageDiv = addMessageToChat('assistant', '');
+                                        }
+                                        
+                                        messageDiv.querySelector('.message-content').textContent = assistantMessage;
+                                    } else if (data.type === 'tool_call') {
+                                        addMessageToChat('tool', `🔧 Calling ${data.toolName}...`);
+                                    } else if (data.type === 'tool_result') {
+                                        addMessageToChat('tool', `📋 Result: ${data.content}`);
+                                    } else if (data.type === 'done') {
+                                        if (messageDiv) {
+                                            messageDiv.querySelector('.message-content').textContent = assistantMessage;
+                                        }
+                                    } else if (data.type === 'error') {
+                                        addMessageToChat('assistant', `❌ Error: ${data.error}`);
+                                    }
+                                } catch (e) {
+                                    console.error('Error parsing SSE data:', e);
+                                }
+                            }
+                        }
+
+                        return readStream();
+                    });
+                }
+
+                return readStream();
+            })
+            .catch(error => {
+                console.error('Chat error:', error);
+                addMessageToChat('assistant', `❌ Error: ${error.message}`);
+            });
+        }
+
+        function addMessageToChat(role, content) {
+            const chatContainer = document.getElementById('chatContainer');
+            const messageDiv = document.createElement('div');
+            
+            let className = 'message ';
+            let prefix = '';
+            
+            switch (role) {
+                case 'user':
+                    className += 'user-message';
+                    prefix = 'You: ';
+                    break;
+                case 'assistant':
+                    className += 'assistant-message';
+                    prefix = 'Assistant: ';
+                    break;
+                case 'tool':
+                    className += 'tool-message';
+                    prefix = 'Tool: ';
+                    break;
+            }
+            
+            messageDiv.className = className;
+            messageDiv.innerHTML = `<strong>${prefix}</strong><span class="message-content">${content}</span>`;
+            
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            return messageDiv;
+        }
+    </script>
+</body>
+</html>

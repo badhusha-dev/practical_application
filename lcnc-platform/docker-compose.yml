@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: lcnc-postgres
+    environment:
+      POSTGRES_DB: lcnc_platform
+      POSTGRES_USER: lcnc_user
+      POSTGRES_PASSWORD: lcnc_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - lcnc-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: lcnc-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - lcnc-network
+
+  lcnc-platform:
+    build: .
+    container_name: lcnc-platform
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/lcnc_platform
+      SPRING_DATASOURCE_USERNAME: lcnc_user
+      SPRING_DATASOURCE_PASSWORD: lcnc_password
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - lcnc-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  lcnc-network:
+    driver: bridge

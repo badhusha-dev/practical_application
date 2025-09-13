@@ -1,0 +1,75 @@
+spring:
+  application:
+    name: graphql-advanced-demo
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/graphql_demo
+    username: postgres
+    password: badsha@123
+    driver-class-name: org.postgresql.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+  
+  cache:
+    type: redis
+    redis:
+      time-to-live: 600000 # 10 minutes
+  
+  redis:
+    host: localhost
+    port: 6379
+    timeout: 2000ms
+    lettuce:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+  
+  graphql:
+    graphiql:
+      enabled: true
+      path: /graphiql
+    playground:
+      enabled: true
+      path: /playground
+    cors:
+      allowed-origins: "*"
+      allowed-methods: "*"
+      allowed-headers: "*"
+  
+  security:
+    jwt:
+      secret: mySecretKey123456789012345678901234567890
+      expiration: 86400000 # 24 hours in milliseconds
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.example.graphql: DEBUG
+    org.springframework.graphql: DEBUG
+    org.springframework.cache: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.data.redis: DEBUG

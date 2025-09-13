@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LCNC Platform - Start Workflow Instance</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-cogs"></i> LCNC Platform
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/workflow">
+                    <i class="fas fa-project-diagram"></i> Dashboard
+                </a>
+                <a class="nav-link" href="/camunda">
+                    <i class="fas fa-tools"></i> Camunda Admin
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-0">
+                            <i class="fas fa-play"></i> Start Workflow Instance
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Workflow Info -->
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle"></i> Workflow Information</h6>
+                            <p class="mb-1"><strong>Name:</strong> <span th:text="${workflow.name}"></span></p>
+                            <p class="mb-1"><strong>Version:</strong> <span th:text="${workflow.version}"></span></p>
+                            <p class="mb-0"><strong>Description:</strong> <span th:text="${workflow.description}"></span></p>
+                        </div>
+
+                        <!-- Error Messages -->
+                        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+
+                        <form th:action="@{/workflow/{id}/start(id=${workflow.id})}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-cogs"></i> Workflow Variables (Optional)
+                                </label>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <input type="text" class="form-control mb-2" name="variable1" 
+                                               placeholder="Variable Name">
+                                        <input type="text" class="form-control mb-2" name="value1" 
+                                               placeholder="Value">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="text" class="form-control mb-2" name="variable2" 
+                                               placeholder="Variable Name">
+                                        <input type="text" class="form-control mb-2" name="value2" 
+                                               placeholder="Value">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <input type="text" class="form-control mb-2" name="variable3" 
+                                               placeholder="Variable Name">
+                                        <input type="text" class="form-control mb-2" name="value3" 
+                                               placeholder="Value">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="text" class="form-control mb-2" name="variable4" 
+                                               placeholder="Variable Name">
+                                        <input type="text" class="form-control mb-2" name="value4" 
+                                               placeholder="Value">
+                                    </div>
+                                </div>
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle"></i> 
+                                    Enter variable names and values that will be passed to the workflow instance.
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <a href="/workflow" class="btn btn-secondary me-md-2">
+                                    <i class="fas fa-arrow-left"></i> Cancel
+                                </a>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-play"></i> Start Instance
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Workflow Preview -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-eye"></i> Workflow Preview
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Note:</strong> This is a simplified workflow preview. 
+                            For detailed workflow visualization, use the Camunda Admin interface.
+                        </div>
+                        <div class="text-center">
+                            <i class="fas fa-project-diagram fa-3x text-muted"></i>
+                            <p class="mt-2 text-muted">Workflow diagram would be displayed here</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LCNC Platform - Upload Workflow</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-cogs"></i> LCNC Platform
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/workflow">
+                    <i class="fas fa-project-diagram"></i> Dashboard
+                </a>
+                <a class="nav-link" href="/camunda">
+                    <i class="fas fa-tools"></i> Camunda Admin
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-0">
+                            <i class="fas fa-upload"></i> Upload BPMN Workflow
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Error Messages -->
+                        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+
+                        <form th:action="@{/workflow/upload}" method="post" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">
+                                    <i class="fas fa-tag"></i> Workflow Name *
+                                </label>
+                                <input type="text" class="form-control" id="name" name="name" required
+                                       placeholder="Enter workflow name">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="description" class="form-label">
+                                    <i class="fas fa-align-left"></i> Description
+                                </label>
+                                <textarea class="form-control" id="description" name="description" rows="3"
+                                          placeholder="Enter workflow description (optional)"></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="file" class="form-label">
+                                    <i class="fas fa-file-code"></i> BPMN File *
+                                </label>
+                                <input type="file" class="form-control" id="file" name="file" 
+                                       accept=".bpmn,.xml" required>
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle"></i> 
+                                    Select a BPMN 2.0 XML file (.bpmn or .xml)
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="autoDeploy" name="autoDeploy">
+                                    <label class="form-check-label" for="autoDeploy">
+                                        <i class="fas fa-rocket"></i> Auto-deploy after upload
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <a href="/workflow" class="btn btn-secondary me-md-2">
+                                    <i class="fas fa-arrow-left"></i> Cancel
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-upload"></i> Upload Workflow
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Help Section -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-question-circle"></i> How to Create BPMN Files
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6><i class="fas fa-desktop"></i> Desktop Tools</h6>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check text-success"></i> Camunda Modeler</li>
+                                    <li><i class="fas fa-check text-success"></i> Eclipse BPMN2 Modeler</li>
+                                    <li><i class="fas fa-check text-success"></i> IntelliJ IDEA BPMN Plugin</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6><i class="fas fa-globe"></i> Online Tools</h6>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check text-success"></i> Camunda Web Modeler</li>
+                                    <li><i class="fas fa-check text-success"></i> bpmn.io</li>
+                                    <li><i class="fas fa-check text-success"></i> Lucidchart</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info mt-3">
+                            <i class="fas fa-lightbulb"></i>
+                            <strong>Tip:</strong> Make sure your BPMN file follows the BPMN 2.0 standard 
+                            and includes proper start and end events.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

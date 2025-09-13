@@ -1,0 +1,42 @@
+type Query {
+  users: [User]
+  products: [Product]
+  categories: [Category]
+}
+
+type Mutation {
+  createUser(username: String!, email: String!, password: String!): User
+  createProduct(name: String!, price: Float!, categoryId: ID!): Product
+  createCategory(name: String!): Category
+  login(username: String!, password: String!): String
+}
+
+type Subscription {
+  productAdded: Product
+}
+
+type User {
+  id: ID!
+  username: String!
+  email: String!
+  createdAt: String
+  updatedAt: String
+}
+
+type Product {
+  id: ID!
+  name: String!
+  price: Float!
+  categoryId: ID!
+  category: Category
+  createdAt: String
+  updatedAt: String
+}
+
+type Category {
+  id: ID!
+  name: String!
+  products: [Product]
+  createdAt: String
+  updatedAt: String
+}

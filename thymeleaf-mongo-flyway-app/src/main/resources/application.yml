@@ -1,0 +1,28 @@
+# Application Configuration
+spring.application.name=thymeleaf-mongo-flyway-app
+server.port=8080
+
+# MongoDB Configuration
+spring.data.mongodb.uri=mongodb://localhost:27017/thymeleafdb
+spring.data.mongodb.auto-index-creation=true
+
+# Mongock Configuration
+mongock:
+  change-logs-scan-package: com.example.thymeleafmongoflywayapp.migration
+  migration-scan-package: com.example.thymeleafmongoflywayapp.migration
+
+# Thymeleaf Configuration
+spring.thymeleaf.cache=false
+spring.thymeleaf.prefix=classpath:/templates/
+spring.thymeleaf.suffix=.html
+spring.thymeleaf.encoding=UTF-8
+spring.thymeleaf.mode=HTML
+
+# Logging Configuration
+logging.level.com.example.thymeleafmongoflywayapp=DEBUG
+logging.level.org.springframework.data.mongodb.core.MongoTemplate=DEBUG
+logging.level.io.mongock=INFO
+
+# Development Configuration
+spring.devtools.restart.enabled=true
+spring.devtools.livereload.enabled=true

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tasks - Business Collections Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .task-card {
+            transition: transform 0.3s ease;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .task-card:hover {
+            transform: translateY(-2px);
+        }
+        .priority-high { border-left: 4px solid #dc3545; }
+        .priority-medium { border-left: 4px solid #ffc107; }
+        .priority-low { border-left: 4px solid #28a745; }
+        .queue-section { background-color: #f8f9fa; }
+        .history-section { background-color: #e9ecef; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">Business Collections Demo</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/employees">Employees</a>
+                <a class="nav-link" href="/departments">Departments</a>
+                <a class="nav-link active" href="/tasks">Tasks</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="mb-4">Task Management</h1>
+                <p class="text-muted">Demonstrating <strong>Queue&lt;Task&gt;</strong> (FIFO) and <strong>Stack&lt;Task&gt;</strong> (LIFO) operations</p>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">⏳ Queue Operations (FIFO)</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li>✅ <strong>Size:</strong> <span th:text="${pendingTasks}">0</span> pending tasks</li>
+                            <li>✅ <strong>FIFO:</strong> First In, First Out</li>
+                            <li>✅ <strong>offer():</strong> Add to end of queue</li>
+                            <li>✅ <strong>poll():</strong> Remove from front</li>
+                            <li>✅ <strong>peek():</strong> View next task</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">📚 Stack Operations (LIFO)</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li>✅ <strong>Size:</strong> <span th:text="${completedTasks}">0</span> completed tasks</li>
+                            <li>✅ <strong>LIFO:</strong> Last In, First Out</li>
+                            <li>✅ <strong>push():</strong> Add to top</li>
+                            <li>✅ <strong>pop():</strong> Remove from top</li>
+                            <li>✅ <strong>peek():</strong> View top task</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">🎯 Task Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-success btn-sm mb-2" onclick="completeTask()">Complete Next Task</button>
+                        <br>
+                        <button class="btn btn-primary btn-sm" onclick="addSampleTask()">Add Sample Task</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card queue-section">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">Task Queue (Queue&lt;Task&gt;) - FIFO</h5>
+                        <small>Pending tasks - First In, First Out</small>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(taskQueue)}" class="text-center text-muted py-4">
+                            <h6>No pending tasks</h6>
+                            <p>Queue is empty</p>
+                        </div>
+                        <div th:each="task, iterStat : ${taskQueue}" class="mb-3">
+                            <div class="card task-card" th:classappend="${task.priority == 1 ? 'priority-high' : (task.priority == 2 ? 'priority-medium' : 'priority-low')}">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="card-title mb-1" th:text="${task.description}">Task Description</h6>
+                                            <span class="badge" 
+                                                  th:classappend="${task.priority == 1 ? 'bg-danger' : (task.priority == 2 ? 'bg-warning' : 'bg-success')}"
+                                                  th:text="'Priority ' + ${task.priority}">Priority 1</span>
+                                        </div>
+                                        <small class="text-muted" th:text="'#' + ${iterStat.count}">#1</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card history-section">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Task History (Stack&lt;Task&gt;) - LIFO</h5>
+                        <small>Completed tasks - Last In, First Out</small>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(taskHistory)}" class="text-center text-muted py-4">
+                            <h6>No completed tasks</h6>
+                            <p>Stack is empty</p>
+                        </div>
+                        <div th:each="task, iterStat : ${taskHistory}" class="mb-3">
+                            <div class="card task-card" th:classappend="${task.priority == 1 ? 'priority-high' : (task.priority == 2 ? 'priority-medium' : 'priority-low')}">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="card-title mb-1" th:text="${task.description}">Task Description</h6>
+                                            <span class="badge bg-secondary" th:text="'Priority ' + ${task.priority}">Priority 1</span>
+                                        </div>
+                                        <small class="text-muted" th:text="'Completed #' + ${iterStat.count}">Completed #1</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">Employee Task Assignments (HashMap&lt;Integer, List&lt;Task&gt;&gt;)</h6>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#maps.isEmpty(employeeTasks)}" class="text-center text-muted py-3">
+                            No employee task assignments
+                        </div>
+                        <div th:each="entry : ${employeeTasks}" class="mb-3">
+                            <h6>Employee ID: <span th:text="${entry.key}">1</span></h6>
+                            <div th:if="${#lists.isEmpty(entry.value)}" class="text-muted">No tasks assigned</div>
+                            <div th:each="task : ${entry.value}" class="ms-3 mb-2">
+                                <span class="badge bg-info" th:text="${task.description}">Task</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">Queue Operations in Code</h6>
+                    </div>
+                    <div class="card-body">
+                        <pre class="bg-light p-3 rounded"><code>// Queue initialization
+Queue&lt;Task&gt; taskQueue = new LinkedList&lt;&gt;();
+
+// Add task to end of queue
+taskQueue.offer(new Task("New task", 1));
+
+// Get next task (FIFO)
+Task nextTask = taskQueue.poll();
+
+// Peek at next task without removing
+Task peekTask = taskQueue.peek();</code></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">Stack Operations in Code</h6>
+                    </div>
+                    <div class="card-body">
+                        <pre class="bg-light p-3 rounded"><code>// Stack initialization
+Stack&lt;Task&gt; taskHistory = new Stack&lt;&gt;();
+
+// Add completed task to top
+taskHistory.push(completedTask);
+
+// Get last completed task (LIFO)
+Task lastTask = taskHistory.pop();
+
+// Peek at top task without removing
+Task topTask = taskHistory.peek();</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-light text-center py-3 mt-5">
+        <div class="container">
+            <p class="mb-0 text-muted">Business Collections Demo - Queue & Stack Operations</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function completeTask() {
+            fetch('/api/tasks/complete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.text())
+            .then(result => {
+                alert(result);
+                location.reload();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error completing task');
+            });
+        }
+
+        function addSampleTask() {
+            const sampleTasks = [
+                { description: "Review code changes", priority: 2 },
+                { description: "Update documentation", priority: 3 },
+                { description: "Fix critical bug", priority: 1 },
+                { description: "Plan next sprint", priority: 2 }
+            ];
+            
+            const randomTask = sampleTasks[Math.floor(Math.random() * sampleTasks.length)];
+            
+            fetch('/api/tasks', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(randomTask)
+            })
+            .then(response => response.json())
+            .then(result => {
+                alert('Task added: ' + result.description);
+                location.reload();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error adding task');
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employees - Business Collections Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .skill-badge {
+            font-size: 0.8rem;
+            margin: 0.1rem;
+        }
+        .department-badge {
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">Business Collections Demo</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link active" href="/employees">Employees</a>
+                <a class="nav-link" href="/departments">Departments</a>
+                <a class="nav-link" href="/tasks">Tasks</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="mb-4">Employees <span class="badge bg-primary" th:text="${totalEmployees}">0</span></h1>
+                <p class="text-muted">Demonstrating <strong>List&lt;Employee&gt;</strong> operations with iteration and filtering</p>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">📋 List Operations</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li>✅ <strong>Size:</strong> <span th:text="${totalEmployees}">0</span> employees</li>
+                            <li>✅ <strong>Iteration:</strong> Displaying all employees in order</li>
+                            <li>✅ <strong>Filtering:</strong> Filter by department</li>
+                            <li>✅ <strong>Stream Operations:</strong> Extract skills and names</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">🎯 Set Operations (Skills)</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Unique skills across all employees:</p>
+                        <div th:if="${#lists.isEmpty(employees)}" class="text-muted">No employees found</div>
+                        <div th:if="${not #lists.isEmpty(employees)}">
+                            <span th:each="skill : ${#strings.arraySplit(employees[0].skills, ',')}" 
+                                  class="badge bg-info skill-badge" 
+                                  th:text="${skill.trim()}">Skill</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Employee List (List&lt;Employee&gt;)</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Department</th>
+                                <th>Skills</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="employee, iterStat : ${employees}">
+                                <td th:text="${iterStat.count}">1</td>
+                                <td>
+                                    <strong th:text="${employee.name}">Employee Name</strong>
+                                </td>
+                                <td>
+                                    <span th:if="${departments.containsKey(employee.departmentId)}" 
+                                          class="badge bg-primary department-badge"
+                                          th:text="${departments.get(employee.departmentId).name}">Department</span>
+                                    <span th:unless="${departments.containsKey(employee.departmentId)}" 
+                                          class="badge bg-secondary department-badge">Unknown</span>
+                                </td>
+                                <td>
+                                    <span th:each="skill : ${#strings.arraySplit(employee.skills, ',')}" 
+                                          class="badge bg-info skill-badge" 
+                                          th:text="${skill.trim()}">Skill</span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">View Tasks</button>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(employees)}">
+                                <td colspan="5" class="text-center text-muted">No employees found</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">Department Filtering</h6>
+                    </div>
+                    <div class="card-body">
+                        <div th:each="dept : ${departments.values()}" class="mb-2">
+                            <a th:href="@{/api/employees/department/{id}(id=${dept.id})}" 
+                               class="btn btn-sm btn-outline-secondary"
+                               th:text="'View ' + ${dept.name} + ' employees'">Department</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">API Endpoints</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li><code>GET /api/employees</code> - Get all employees</li>
+                            <li><code>GET /api/skills</code> - Get unique skills</li>
+                            <li><code>POST /api/employees</code> - Add new employee</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-light text-center py-3 mt-5">
+        <div class="container">
+            <p class="mb-0 text-muted">Business Collections Demo - List&lt;Employee&gt; Operations</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${isEdit} ? 'Edit User' : 'Add User'">Add User - User Management System</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <!-- Custom CSS -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="bi bi-people-fill me-2"></i>
+                User Management System
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">
+                            <i class="bi bi-speedometer2 me-1"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/users">
+                            <i class="bi bi-people me-1"></i>
+                            Users
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 d-md-block bg-white sidebar collapse shadow-sm rounded">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="/dashboard">
+                                <i class="bi bi-speedometer2 me-2"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="/users">
+                                <i class="bi bi-people me-2"></i>
+                                All Users
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active text-primary" href="/users/new">
+                                <i class="bi bi-person-plus me-2"></i>
+                                Add User
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <!-- Page Header -->
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2 text-primary">
+                        <i th:class="${isEdit} ? 'bi bi-pencil me-2' : 'bi bi-person-plus me-2'"></i>
+                        <span th:text="${isEdit} ? 'Edit User' : 'Add New User'">Add New User</span>
+                    </h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <a href="/users" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i>
+                            Back to Users
+                        </a>
+                    </div>
+                </div>
+
+                <!-- User Form -->
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="card shadow">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">
+                                    <i th:class="${isEdit} ? 'bi bi-pencil me-2' : 'bi bi-person-plus me-2'"></i>
+                                    <span th:text="${isEdit} ? 'Edit User Information' : 'User Information'">User Information</span>
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <form th:action="${isEdit} ? @{/users/update/{id}(id=${user.id})} : @{/users/save}" 
+                                      th:object="${user}" method="post" novalidate>
+                                    
+                                    <!-- Name Field -->
+                                    <div class="mb-3">
+                                        <label for="name" class="form-label">
+                                            <i class="bi bi-person me-1"></i>
+                                            Full Name <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" 
+                                               class="form-control" 
+                                               th:class="${#fields.hasErrors('name')} ? 'form-control is-invalid' : 'form-control'"
+                                               id="name" 
+                                               th:field="*{name}" 
+                                               placeholder="Enter full name"
+                                               required>
+                                        <div th:if="${#fields.hasErrors('name')}" class="invalid-feedback">
+                                            <span th:errors="*{name}">Name is required</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Email Field -->
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">
+                                            <i class="bi bi-envelope me-1"></i>
+                                            Email Address <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="email" 
+                                               class="form-control" 
+                                               th:class="${#fields.hasErrors('email')} ? 'form-control is-invalid' : 'form-control'"
+                                               id="email" 
+                                               th:field="*{email}" 
+                                               placeholder="Enter email address"
+                                               required>
+                                        <div th:if="${#fields.hasErrors('email')}" class="invalid-feedback">
+                                            <span th:errors="*{email}">Email is required</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Age Field -->
+                                    <div class="mb-3">
+                                        <label for="age" class="form-label">
+                                            <i class="bi bi-calendar me-1"></i>
+                                            Age <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="number" 
+                                               class="form-control" 
+                                               th:class="${#fields.hasErrors('age')} ? 'form-control is-invalid' : 'form-control'"
+                                               id="age" 
+                                               th:field="*{age}" 
+                                               placeholder="Enter age"
+                                               min="1" 
+                                               max="120"
+                                               required>
+                                        <div th:if="${#fields.hasErrors('age')}" class="invalid-feedback">
+                                            <span th:errors="*{age}">Age is required</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Form Actions -->
+                                    <div class="d-flex justify-content-between">
+                                        <a href="/users" class="btn btn-secondary">
+                                            <i class="bi bi-x-circle me-1"></i>
+                                            Cancel
+                                        </a>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i th:class="${isEdit} ? 'bi bi-check-circle me-1' : 'bi bi-person-plus me-1'"></i>
+                                            <span th:text="${isEdit} ? 'Update User' : 'Create User'">Create User</span>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Help Card -->
+                <div class="row justify-content-center mt-4">
+                    <div class="col-lg-8">
+                        <div class="card border-info">
+                            <div class="card-header bg-info text-white">
+                                <h6 class="m-0">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    Form Guidelines
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <ul class="mb-0">
+                                    <li><strong>Name:</strong> Enter the user's full name (required)</li>
+                                    <li><strong>Email:</strong> Must be a valid email address and unique (required)</li>
+                                    <li><strong>Age:</strong> Must be between 1 and 120 years (required)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script th:src="@{/js/app.js}"></script>
+</body>
+</html>

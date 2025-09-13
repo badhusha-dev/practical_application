@@ -1,0 +1,65 @@
+type Query {
+    apps: [AppDefinition]
+    app(id: ID!): AppDefinition
+    appByName(name: String!): AppDefinition
+    activeApps: [AppDefinition]
+    
+    workflows: [WorkflowDefinition]
+    workflow(id: ID!): WorkflowDefinition
+    workflowByName(name: String!): WorkflowDefinition
+    deployedWorkflows: [WorkflowDefinition]
+    activeWorkflows: [WorkflowDefinition]
+}
+
+type Mutation {
+    createApp(input: AppInput!): AppDefinition
+    updateApp(id: ID!, input: AppInput!): AppDefinition
+    deleteApp(id: ID!): Boolean
+    
+    createWorkflow(input: WorkflowInput!): WorkflowDefinition
+    updateWorkflow(id: ID!, input: WorkflowInput!): WorkflowDefinition
+    deleteWorkflow(id: ID!): Boolean
+    deployWorkflow(id: ID!): String
+    undeployWorkflow(id: ID!): String
+}
+
+type AppDefinition {
+    id: ID!
+    name: String!
+    configJson: String!
+    description: String
+    version: String!
+    active: Boolean!
+    createdAt: String!
+    updatedAt: String!
+}
+
+type WorkflowDefinition {
+    id: ID!
+    name: String!
+    bpmnXml: String!
+    description: String
+    version: String!
+    deployed: Boolean!
+    camundaDeploymentId: String
+    processDefinitionKey: String
+    active: Boolean!
+    createdAt: String!
+    updatedAt: String!
+}
+
+input AppInput {
+    name: String!
+    configJson: String!
+    description: String
+    version: String
+    active: Boolean
+}
+
+input WorkflowInput {
+    name: String!
+    bpmnXml: String!
+    description: String
+    version: String
+    active: Boolean
+}

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Collections Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 0;
+        }
+        .feature-card {
+            transition: transform 0.3s ease;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        .collection-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">Business Collections Demo</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/employees">Employees</a>
+                <a class="nav-link" href="/departments">Departments</a>
+                <a class="nav-link" href="/tasks">Tasks</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero-section">
+        <div class="container text-center">
+            <h1 class="display-4 mb-4" th:text="${message}">Welcome to Business Collections Demo</h1>
+            <p class="lead">Demonstrating Java Collections in a real business context</p>
+            <p class="mb-4">This application showcases how different Java Collections (List, Set, Map, Queue, Stack) are used in enterprise applications.</p>
+        </div>
+    </section>
+
+    <section class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">Java Collections in Action</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center">
+                            <div class="collection-icon">📋</div>
+                            <h5 class="card-title">List&lt;Employee&gt;</h5>
+                            <p class="card-text">Stores employees in order, allows iteration and filtering. Used for displaying employee lists and department filtering.</p>
+                            <a href="/employees" class="btn btn-primary">View Employees</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center">
+                            <div class="collection-icon">🏢</div>
+                            <h5 class="card-title">Map&lt;Integer, Department&gt;</h5>
+                            <p class="card-text">Maps department IDs to Department objects for fast lookups. Used for employee-department relationships.</p>
+                            <a href="/departments" class="btn btn-primary">View Departments</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center">
+                            <div class="collection-icon">🎯</div>
+                            <h5 class="card-title">Set&lt;String&gt;</h5>
+                            <p class="card-text">Stores unique employee skills. Ensures no duplicate skills across the organization.</p>
+                            <a href="/employees" class="btn btn-primary">View Skills</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-6 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center">
+                            <div class="collection-icon">⏳</div>
+                            <h5 class="card-title">Queue&lt;Task&gt;</h5>
+                            <p class="card-text">Manages pending tasks in FIFO order. New tasks are added to the end, processed from the front.</p>
+                            <a href="/tasks" class="btn btn-primary">View Task Queue</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center">
+                            <div class="collection-icon">📚</div>
+                            <h5 class="card-title">Stack&lt;Task&gt;</h5>
+                            <p class="card-text">Tracks completed tasks in LIFO order. Most recently completed tasks are at the top.</p>
+                            <a href="/tasks" class="btn btn-primary">View Task History</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-light py-5">
+        <div class="container">
+            <h3 class="text-center mb-4">API Endpoints</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>REST API</h5>
+                    <ul class="list-unstyled">
+                        <li><code>GET /api/employees</code> - Get all employees</li>
+                        <li><code>GET /api/departments</code> - Get all departments</li>
+                        <li><code>GET /api/skills</code> - Get unique skills</li>
+                        <li><code>GET /api/tasks/queue</code> - Get pending tasks</li>
+                        <li><code>GET /api/tasks/history</code> - Get completed tasks</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h5>Web Views</h5>
+                    <ul class="list-unstyled">
+                        <li><code>GET /employees</code> - Employee table view</li>
+                        <li><code>GET /departments</code> - Department view</li>
+                        <li><code>GET /tasks</code> - Task management view</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-dark text-white text-center py-3">
+        <div class="container">
+            <p class="mb-0">Business Collections Demo - Spring Boot + Java Collections</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

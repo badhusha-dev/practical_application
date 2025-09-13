@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">LCNC Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 100px 0;
+        }
+        .feature-card {
+            transition: transform 0.3s ease;
+            height: 100%;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        .stats-section {
+            background-color: #f8f9fa;
+            padding: 60px 0;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-cogs"></i> LCNC Platform
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/workflow">
+                    <i class="fas fa-project-diagram"></i> Workflows
+                </a>
+                <a class="nav-link" href="/camunda">
+                    <i class="fas fa-tools"></i> Camunda Admin
+                </a>
+                <a class="nav-link" href="/graphiql">
+                    <i class="fas fa-code"></i> GraphQL
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container text-center">
+            <h1 class="display-4 mb-4">
+                <i class="fas fa-rocket"></i> LCNC Platform
+            </h1>
+            <p class="lead mb-4" th:text="${description}">
+                Low-Code No-Code Platform with Workflow Engine
+            </p>
+            <p class="mb-4">
+                Build, deploy, and manage workflows with ease using our powerful low-code platform
+            </p>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                <a href="/workflow" class="btn btn-light btn-lg me-md-2">
+                    <i class="fas fa-play"></i> Get Started
+                </a>
+                <a href="/workflow/upload" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-upload"></i> Upload Workflow
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row text-center mb-5">
+                <div class="col-12">
+                    <h2 class="display-5 mb-3">Platform Features</h2>
+                    <p class="lead text-muted">
+                        Everything you need to build and manage workflows
+                    </p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card feature-card shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="fas fa-project-diagram fa-3x text-primary"></i>
+                            </div>
+                            <h5 class="card-title">Workflow Management</h5>
+                            <p class="card-text">
+                                Upload, deploy, and manage BPMN workflows with our intuitive interface.
+                                Support for complex business processes and automation.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card feature-card shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="fas fa-code fa-3x text-success"></i>
+                            </div>
+                            <h5 class="card-title">REST & GraphQL APIs</h5>
+                            <p class="card-text">
+                                Comprehensive APIs for integrating with your applications.
+                                REST endpoints and GraphQL queries for maximum flexibility.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card feature-card shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="fas fa-shield-alt fa-3x text-warning"></i>
+                            </div>
+                            <h5 class="card-title">Security & Authentication</h5>
+                            <p class="card-text">
+                                JWT-based authentication with role-based access control.
+                                Secure your workflows and data with enterprise-grade security.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card feature-card shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="fas fa-database fa-3x text-info"></i>
+                            </div>
+                            <h5 class="card-title">Database Integration</h5>
+                            <p class="card-text">
+                                PostgreSQL database with Flyway migrations.
+                                Reliable data persistence and schema management.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card feature-card shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="fas fa-memory fa-3x text-danger"></i>
+                            </div>
+                            <h5 class="card-title">Redis Caching</h5>
+                            <p class="card-text">
+                                High-performance caching with Redis for workflow state management.
+                                Fast access to workflow instances and execution data.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card feature-card shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="fas fa-tools fa-3x text-secondary"></i>
+                            </div>
+                            <h5 class="card-title">Camunda Integration</h5>
+                            <p class="card-text">
+                                Powered by Camunda BPM engine for robust workflow execution.
+                                Professional workflow management and monitoring tools.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <i class="fas fa-project-diagram fa-2x text-primary"></i>
+                    </div>
+                    <h3 class="display-6 text-primary">0</h3>
+                    <p class="text-muted">Workflows Deployed</p>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <i class="fas fa-play-circle fa-2x text-success"></i>
+                    </div>
+                    <h3 class="display-6 text-success">0</h3>
+                    <p class="text-muted">Active Instances</p>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <i class="fas fa-check-circle fa-2x text-info"></i>
+                    </div>
+                    <h3 class="display-6 text-info">0</h3>
+                    <p class="text-muted">Completed Tasks</p>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <i class="fas fa-users fa-2x text-warning"></i>
+                    </div>
+                    <h3 class="display-6 text-warning">2</h3>
+                    <p class="text-muted">Active Users</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-5 bg-primary text-white">
+        <div class="container text-center">
+            <h2 class="mb-4">Ready to Get Started?</h2>
+            <p class="lead mb-4">
+                Start building powerful workflows today with our low-code platform
+            </p>
+            <a href="/workflow/upload" class="btn btn-light btn-lg">
+                <i class="fas fa-upload"></i> Upload Your First Workflow
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-cogs"></i> LCNC Platform</h5>
+                    <p class="text-muted">
+                        Low-Code No-Code Platform with Workflow Engine
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="text-muted mb-0">
+                        &copy; 2024 LCNC Platform. Built with Spring Boot & Camunda.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
