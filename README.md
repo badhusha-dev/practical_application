@@ -1,8 +1,21 @@
-# E-commerce Frontend
+# 🚀 Practical Projects Collection
 
-This is a monorepo containing both the User App and Admin Panel for the e-commerce application.
+This repository contains a collection of practical, production-ready applications demonstrating modern web development technologies and best practices.
 
-## Structure
+## 📁 Projects Overview
+
+| Project | Technology Stack | Description | Status |
+|---------|------------------|-------------|--------|
+| **🛒 E-commerce Frontend** | React 18, Vite, Redux Toolkit | Full-stack e-commerce application with user and admin interfaces | ✅ Complete |
+| **👥 Thymeleaf MongoDB App** | Spring Boot, MongoDB, Thymeleaf | Modern web application with server-side rendering and NoSQL database | ✅ Complete |
+
+---
+
+## 🛒 E-commerce Frontend
+
+A comprehensive monorepo containing both the User App and Admin Panel for a modern e-commerce application.
+
+### 📁 Project Structure
 
 ```
 frontend/
@@ -15,14 +28,13 @@ frontend/
 └── README.md
 ```
 
-## Getting Started
+### 🚀 Quick Start
 
-### Prerequisites
-- Node.js >= 18.0.0
-- npm >= 9.0.0
+#### Prerequisites
+- ☕ Node.js >= 18.0.0
+- 📦 npm >= 9.0.0
 
-### Installation
-
+#### Installation & Running
 ```bash
 # Install all dependencies
 npm install
@@ -32,17 +44,19 @@ npm run dev:user    # User app on http://localhost:5173
 npm run dev:admin   # Admin app on http://localhost:5174
 ```
 
-### Available Scripts
+### 📜 Available Scripts
 
-- `npm run dev:user` - Start user app development server
-- `npm run dev:admin` - Start admin app development server
-- `npm run build:user` - Build user app for production
-- `npm run build:admin` - Build admin app for production
-- `npm run build` - Build both apps
-- `npm run lint` - Run ESLint on all workspaces
-- `npm run lint:fix` - Fix ESLint issues
-- `npm run format` - Format code with Prettier
-- `npm run format:check` - Check code formatting
+| Command | Description |
+|---------|-------------|
+| `npm run dev:user` | Start user app development server |
+| `npm run dev:admin` | Start admin app development server |
+| `npm run build:user` | Build user app for production |
+| `npm run build:admin` | Build admin app for production |
+| `npm run build` | Build both apps |
+| `npm run lint` | Run ESLint on all workspaces |
+| `npm run lint:fix` | Fix ESLint issues |
+| `npm run format` | Format code with Prettier |
+| `npm run format:check` | Check code formatting |
 
 ## Tech Stack
 
