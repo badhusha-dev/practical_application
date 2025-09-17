@@ -86,7 +86,27 @@ A complete **production-ready Spring Boot application** for file storage and man
 
 ## 🚀 Quick Start
 
-### Option 1: Docker Compose (Recommended)
+### Option 1: Local Development with H2 Database (Recommended for Testing)
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd file-storage-app
+   ```
+
+2. **Run the application**
+   ```bash
+   ./mvnw spring-boot:run
+   ```
+
+3. **Access the application**
+   - Web UI: http://localhost:8080
+   - H2 Console: http://localhost:8080/h2-console
+   - Login with demo credentials:
+     - **Admin**: username: `admin`, password: `admin123`
+     - **User**: username: `user`, password: `user123`
+
+### Option 2: Docker Compose (Production-like Setup)
 
 1. **Clone the repository**
    ```bash
@@ -97,7 +117,7 @@ A complete **production-ready Spring Boot application** for file storage and man
 2. **Configure environment variables**
    ```bash
    cp env.example .env
-   # Edit .env with your AWS credentials
+   # Edit .env with your AWS credentials and database settings
    ```
 
 3. **Start the application**
@@ -110,7 +130,7 @@ A complete **production-ready Spring Boot application** for file storage and man
    - Database: localhost:5432
    - Redis: localhost:6379
 
-### Option 2: Local Development
+### Option 3: Local Development with PostgreSQL
 
 1. **Setup PostgreSQL**
    ```bash
@@ -137,6 +157,78 @@ A complete **production-ready Spring Boot application** for file storage and man
    mvn clean install
    mvn spring-boot:run
    ```
+
+## 🎯 Demo Credentials
+
+The application automatically creates demo users on startup:
+- **Admin User**: `admin` / `admin123` (10GB storage limit, full admin access)
+- **Regular User**: `user` / `user123` (1GB storage limit, standard user access)
+
+## 🔧 Development Mode Features
+
+When running in development mode (H2 database), the application includes:
+- **Mock S3 Service**: Files are simulated without requiring AWS credentials
+- **Auto-generated Demo Data**: Users and sample files are created automatically
+- **H2 Console**: Access database directly at http://localhost:8080/h2-console
+- **Hot Reload**: Changes to templates and static resources are reflected immediately
+
+## ✅ Current Status
+
+### Working Features
+- ✅ **Application Startup**: Successfully runs on port 8080
+- ✅ **Database Integration**: H2 in-memory database working
+- ✅ **User Authentication**: Login/logout functionality
+- ✅ **Demo Users**: Auto-created admin and user accounts
+- ✅ **Security Configuration**: Spring Security properly configured
+- ✅ **Thymeleaf Templates**: All templates rendering correctly
+- ✅ **Responsive UI**: Bootstrap 5 interface working
+- ✅ **File Upload Interface**: Drag-and-drop upload area
+- ✅ **Mock S3 Service**: File operations simulated for development
+
+### In Development
+- 🔄 **File Upload Logic**: Core upload functionality being tested
+- 🔄 **File Management**: List, download, delete operations
+- 🔄 **Admin Panel**: User management features
+- 🔄 **File Sharing**: Share links with expiration
+- 🔄 **AWS S3 Integration**: Real S3 operations (when credentials provided)
+
+### Known Issues Fixed
+- ✅ **Compilation Errors**: All Java compilation issues resolved
+- ✅ **Template Errors**: Thymeleaf layout issues fixed
+- ✅ **Database Schema**: JPA entity mapping issues resolved
+- ✅ **Repository Methods**: All repository queries working
+
+## 🛠️ Troubleshooting
+
+### Common Issues
+
+1. **Application won't start**
+   ```bash
+   # Check Java version
+   java --version  # Should be 17+
+   
+   # Clean and rebuild
+   ./mvnw clean compile
+   ./mvnw spring-boot:run
+   ```
+
+2. **Database connection issues**
+   - For H2: Check if port 8080 is available
+   - For PostgreSQL: Verify database exists and credentials are correct
+
+3. **Template rendering errors**
+   - Ensure all Thymeleaf templates have proper fragment definitions
+   - Check browser console for JavaScript errors
+
+4. **AWS S3 issues**
+   - In development mode, S3 operations are mocked
+   - For production, ensure AWS credentials are properly configured
+
+### Getting Help
+
+- Check the application logs for detailed error messages
+- Use the H2 console to inspect database state
+- Verify all dependencies are properly installed
 
 ## 📁 Project Structure
 
