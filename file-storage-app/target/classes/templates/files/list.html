@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content}, ~{::title})}">
+<head>
+    <title>My Files - File Storage App</title>
+</head>
+<body>
+    <div th:fragment="content">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2>
+                            <i class="bi bi-folder me-2"></i>My Files
+                        </h2>
+                        <p class="text-muted mb-0">Manage your uploaded files</p>
+                    </div>
+                    <div>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                            <i class="bi bi-cloud-upload me-2"></i>Upload File
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <form th:action="@{/files}" method="get" class="row g-3">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-search"></i>
+                                    </span>
+                                    <input type="text" class="form-control" name="search" 
+                                           th:value="${search}" placeholder="Search files...">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select" name="sortBy">
+                                    <option value="createdAt" th:selected="${sortBy == 'createdAt'}">Date</option>
+                                    <option value="originalFilename" th:selected="${sortBy == 'originalFilename'}">Name</option>
+                                    <option value="fileSize" th:selected="${sortBy == 'fileSize'}">Size</option>
+                                    <option value="contentType" th:selected="${sortBy == 'contentType'}">Type</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select" name="sortDir">
+                                    <option value="desc" th:selected="${sortDir == 'desc'}">Descending</option>
+                                    <option value="asc" th:selected="${sortDir == 'asc'}">Ascending</option>
+                                </select>
+                            </div>
+                            <div class="col-md-1">
+                                <button type="submit" class="btn btn-outline-primary w-100">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Files Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div th:if="${files.empty}" class="text-center text-muted py-5">
+                            <i class="bi bi-folder-x display-1"></i>
+                            <h4 class="mt-3">No files found</h4>
+                            <p th:if="${search != null and !search.empty}">
+                                No files match your search criteria "<span th:text="${search}">search term</span>"
+                            </p>
+                            <p th:if="${search == null or search.empty}">
+                                Upload your first file to get started
+                            </p>
+                            <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                                <i class="bi bi-cloud-upload me-2"></i>Upload File
+                            </button>
+                        </div>
+
+                        <div th:if="${!files.empty}" class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <i class="bi bi-file-earmark me-1"></i>Name
+                                        </th>
+                                        <th>
+                                            <i class="bi bi-hdd me-1"></i>Size
+                                        </th>
+                                        <th>
+                                            <i class="bi bi-tag me-1"></i>Type
+                                        </th>
+                                        <th>
+                                            <i class="bi bi-calendar me-1"></i>Uploaded
+                                        </th>
+                                        <th>
+                                            <i class="bi bi-gear me-1"></i>Actions
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="file : ${files.content}">
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-file-earmark me-2 text-primary"></i>
+                                                <div>
+                                                    <div class="fw-bold" th:text="${file.originalFilename}">filename.ext</div>
+                                                    <small class="text-muted" th:text="${file.filename}">unique_filename.ext</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td th:text="${file.formattedFileSize}">1.2 MB</td>
+                                        <td>
+                                            <span class="badge bg-secondary" th:text="${file.contentType}">application/pdf</span>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <div th:text="${#temporals.format(file.createdAt, 'MMM dd, yyyy')}">Jan 01, 2024</div>
+                                                <small class="text-muted" th:text="${#temporals.format(file.createdAt, 'HH:mm')}">12:00</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a th:href="@{'/files/download/' + ${file.id}}" 
+                                                   class="btn btn-outline-success" 
+                                                   title="Download">
+                                                    <i class="bi bi-download"></i>
+                                                </a>
+                                                <a th:href="@{'/files/view/' + ${file.id}}" 
+                                                   class="btn btn-outline-info" 
+                                                   title="View Details">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <button class="btn btn-outline-warning" 
+                                                        th:onclick="'shareFile(' + ${file.id} + ')'"
+                                                        title="Share">
+                                                    <i class="bi bi-share"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger" 
+                                                        th:onclick="'deleteFile(' + ${file.id} + ', \'' + ${file.originalFilename} + '\')'"
+                                                        title="Delete">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        <nav th:if="${totalPages > 1}" class="mt-4">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/files(page=${currentPage - 1}, size=${files.size}, sortBy=${sortBy}, sortDir=${sortDir}, search=${search})}">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </a>
+                                </li>
+                                
+                                <li th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}" 
+                                    class="page-item" 
+                                    th:classappend="${pageNum == currentPage} ? 'active'">
+                                    <a class="page-link" 
+                                       th:href="@{/files(page=${pageNum}, size=${files.size}, sortBy=${sortBy}, sortDir=${sortDir}, search=${search})}"
+                                       th:text="${pageNum + 1}">1</a>
+                                </li>
+                                
+                                <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/files(page=${currentPage + 1}, size=${files.size}, sortBy=${sortBy}, sortDir=${sortDir}, search=${search})}">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Modal -->
+        <div class="modal fade" id="uploadModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="bi bi-cloud-upload me-2"></i>Upload File
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form th:action="@{/files/upload}" method="post" enctype="multipart/form-data" id="uploadForm">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="file" class="form-label">Choose File</label>
+                                <input type="file" class="form-control" id="file" name="file" required>
+                                <div class="form-text">Maximum file size: 100MB. Supported formats: PDF, DOC, DOCX, TXT, JPG, PNG, GIF, MP4, MP3, ZIP, RAR</div>
+                            </div>
+                            
+                            <!-- Drag and Drop Area -->
+                            <div class="border border-dashed rounded p-4 text-center" id="dropZone">
+                                <i class="bi bi-cloud-upload display-4 text-muted"></i>
+                                <p class="text-muted mt-2">Drag and drop files here or click to browse</p>
+                                <small class="text-muted">Multiple files supported</small>
+                            </div>
+                            
+                            <!-- Upload Progress -->
+                            <div class="mt-3" id="uploadProgress" style="display: none;">
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                </div>
+                                <small class="text-muted mt-1">Uploading...</small>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary" id="uploadBtn">
+                                <i class="bi bi-cloud-upload me-2"></i>Upload
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Share Modal -->
+        <div class="modal fade" id="shareModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="bi bi-share me-2"></i>Share File
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="shareForm">
+                            <div class="mb-3">
+                                <label for="expiresAt" class="form-label">Expires At</label>
+                                <input type="datetime-local" class="form-control" id="expiresAt" name="expiresAt">
+                                <div class="form-text">Leave empty for no expiration</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="maxDownloads" class="form-label">Max Downloads</label>
+                                <input type="number" class="form-control" id="maxDownloads" name="maxDownloads" min="1">
+                                <div class="form-text">Leave empty for unlimited downloads</div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="createShare()">
+                            <i class="bi bi-share me-2"></i>Create Share
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentFileId = null;
+        
+        function deleteFile(fileId, filename) {
+            if (confirm('Are you sure you want to delete "' + filename + '"? This action cannot be undone.')) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/files/delete/' + fileId;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+        
+        function shareFile(fileId) {
+            currentFileId = fileId;
+            $('#shareModal').modal('show');
+        }
+        
+        function createShare() {
+            // Implementation for creating share would go here
+            alert('Share feature coming soon!');
+            $('#shareModal').modal('hide');
+        }
+        
+        // Drag and drop functionality
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('file');
+        
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('border-primary');
+        });
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('border-primary');
+        });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-primary');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+            }
+        });
+    </script>
+</body>
+</html>

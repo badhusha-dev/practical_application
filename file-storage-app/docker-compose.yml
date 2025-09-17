@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: file-storage-postgres
+    environment:
+      POSTGRES_DB: filestorage
+      POSTGRES_USER: filestorage
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - file-storage-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U filestorage -d filestorage"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # File Storage Application
+  app:
+    build: .
+    container_name: file-storage-app
+    environment:
+      # Database Configuration
+      DB_USERNAME: filestorage
+      DB_PASSWORD: password
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/filestorage
+      
+      # AWS Configuration (set these in your environment or .env file)
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET:-file-storage-bucket}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+      
+      # JWT Secret
+      JWT_SECRET: ${JWT_SECRET:-mySecretKey}
+      
+      # Application Configuration
+      SERVER_PORT: 8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - file-storage-network
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Redis (for caching and session management)
+  redis:
+    image: redis:7-alpine
+    container_name: file-storage-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - file-storage-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  file-storage-network:
+    driver: bridge

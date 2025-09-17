@@ -1,0 +1,85 @@
+server:
+  port: 8080
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+spring:
+  application:
+    name: file-storage-app
+  
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+  
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  
+  flyway:
+    enabled: false
+    locations: classpath:db/migration
+  
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+    encoding: UTF-8
+    mode: HTML
+
+# AWS Configuration
+aws:
+  s3:
+    bucket-name: ${AWS_S3_BUCKET:file-storage-bucket}
+    region: ${AWS_REGION:us-east-1}
+  access-key: ${AWS_ACCESS_KEY_ID:}
+  secret-key: ${AWS_SECRET_ACCESS_KEY:}
+
+# Application Configuration
+app:
+  file:
+    max-size: 100MB
+    allowed-types: pdf,doc,docx,txt,jpg,jpeg,png,gif,mp4,mp3,zip,rar
+    upload-path: /uploads
+  security:
+    jwt:
+      secret: ${JWT_SECRET:mySecretKey}
+      expiration: 86400000 # 24 hours
+  storage:
+    default-quota: 1073741824 # 1GB in bytes
+    admin-quota: 10737418240 # 10GB in bytes
+
+# Logging
+logging:
+  level:
+    com.example.filestorageapp: DEBUG
+    org.springframework.security: DEBUG
+    software.amazon.awssdk: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Management endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized

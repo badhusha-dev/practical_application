@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content}, ~{::title})}">
+<head>
+    <title>Dashboard - File Storage App</title>
+</head>
+<body>
+    <div th:fragment="content">
+        <!-- Welcome Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h2 class="card-title mb-1">
+                                    <i class="bi bi-speedometer2 me-2"></i>
+                                    Welcome back, <span th:text="${user.username}">User</span>!
+                                </h2>
+                                <p class="card-text mb-0">Manage your files and storage efficiently</p>
+                            </div>
+                            <div class="col-md-4 text-md-end">
+                                <div class="d-flex flex-column align-items-md-end">
+                                    <span class="badge bg-light text-dark fs-6 mb-2" th:text="${user.role.name()">USER</span>
+                                    <small th:text="${#temporals.format(user.createdAt, 'MMM dd, yyyy')}">Joined Jan 01, 2024</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Total Files</h6>
+                                <h3 th:text="${totalFiles}">0</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="bi bi-files display-4 opacity-75"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Storage Used</h6>
+                                <h3 th:text="${#numbers.formatDecimal(user.usedStorage / 1024 / 1024 / 1024, 1, 2)}">0.0</h3>
+                                <small>GB</small>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="bi bi-hdd display-4 opacity-75"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Storage Quota</h6>
+                                <h3 th:text="${#numbers.formatDecimal(user.storageQuota / 1024 / 1024 / 1024, 1, 2)}">1.0</h3>
+                                <small>GB</small>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="bi bi-hdd-stack display-4 opacity-75"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-3">
+                <div class="card bg-secondary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Usage</h6>
+                                <h3 th:text="${#numbers.formatDecimal(storageUsagePercentage, 1, 1)}">0.0</h3>
+                                <small>%</small>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="bi bi-pie-chart display-4 opacity-75"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Storage Progress Bar -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="bi bi-hdd me-2"></i>Storage Usage
+                        </h5>
+                        <div class="progress mb-2" style="height: 25px;">
+                            <div class="progress-bar" 
+                                 th:style="'width: ' + ${storageUsagePercentage} + '%'"
+                                 th:classappend="${storageUsagePercentage > 80 ? 'bg-danger' : storageUsagePercentage > 60 ? 'bg-warning' : 'bg-success'}"
+                                 role="progressbar">
+                                <span th:text="${#numbers.formatDecimal(storageUsagePercentage, 1, 1)} + '%'">0%</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between text-muted small">
+                            <span th:text="${#numbers.formatDecimal(user.usedStorage / 1024 / 1024 / 1024, 1, 2)} + ' GB used'">0.0 GB used</span>
+                            <span th:text="${#numbers.formatDecimal(user.storageQuota / 1024 / 1024 / 1024, 1, 2)} + ' GB total'">1.0 GB total</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="bi bi-lightning me-2"></i>Quick Actions
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-3 mb-2">
+                                <a th:href="@{/files}" class="btn btn-outline-primary w-100">
+                                    <i class="bi bi-folder me-2"></i>View All Files
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <button class="btn btn-outline-success w-100" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                                    <i class="bi bi-cloud-upload me-2"></i>Upload File
+                                </button>
+                            </div>
+                            <div class="col-md-3 mb-2" th:if="${user.role.name() == 'ADMIN'}">
+                                <a th:href="@{/admin}" class="btn btn-outline-warning w-100">
+                                    <i class="bi bi-gear me-2"></i>Admin Panel
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <a th:href="@{/profile}" class="btn btn-outline-info w-100">
+                                    <i class="bi bi-person me-2"></i>Profile
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Files -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-clock-history me-2"></i>Recent Files
+                        </h5>
+                        <a th:href="@{/files}" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${recentFiles.empty}" class="text-center text-muted py-4">
+                            <i class="bi bi-folder-x display-4"></i>
+                            <p class="mt-2">No files uploaded yet</p>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                                <i class="bi bi-cloud-upload me-2"></i>Upload Your First File
+                            </button>
+                        </div>
+                        
+                        <div th:if="${!recentFiles.empty}" class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Size</th>
+                                        <th>Type</th>
+                                        <th>Uploaded</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="file : ${recentFiles}">
+                                        <td>
+                                            <i class="bi bi-file-earmark me-2"></i>
+                                            <span th:text="${file.originalFilename}">filename.ext</span>
+                                        </td>
+                                        <td th:text="${file.formattedFileSize}">1.2 MB</td>
+                                        <td>
+                                            <span class="badge bg-secondary" th:text="${file.contentType}">application/pdf</span>
+                                        </td>
+                                        <td th:text="${#temporals.format(file.createdAt, 'MMM dd, yyyy HH:mm')}">Jan 01, 2024 12:00</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a th:href="@{'/files/download/' + ${file.id}}" class="btn btn-outline-success">
+                                                    <i class="bi bi-download"></i>
+                                                </a>
+                                                <a th:href="@{'/files/view/' + ${file.id}}" class="btn btn-outline-info">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Modal -->
+        <div class="modal fade" id="uploadModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="bi bi-cloud-upload me-2"></i>Upload File
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form th:action="@{/files/upload}" method="post" enctype="multipart/form-data">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="file" class="form-label">Choose File</label>
+                                <input type="file" class="form-control" id="file" name="file" required>
+                                <div class="form-text">Maximum file size: 100MB</div>
+                            </div>
+                            
+                            <!-- Drag and Drop Area -->
+                            <div class="border border-dashed rounded p-4 text-center" id="dropZone">
+                                <i class="bi bi-cloud-upload display-4 text-muted"></i>
+                                <p class="text-muted mt-2">Drag and drop files here or click to browse</p>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-cloud-upload me-2"></i>Upload
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
